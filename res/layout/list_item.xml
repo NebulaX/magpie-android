@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+   
+   <!-- Device label --> 
+   <TextView
+        android:id="@+id/device"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="2dip"
+        android:paddingTop="6dip"
+        android:textColor="#43bd00"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+        
+    <!-- Name label -->
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="2dip"
+        android:textColor="#acacac"
+        android:textSize="16sp"/>
+    
+        <!-- Status label -->
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="2dip"
+        android:textColor="#acacac"
+        android:textSize="16sp"/>
+    
+<!--      <ToggleButton
+        android:id="@+id/tbEnglish"
+        android:layout_width="137dp"
+        android:layout_height="36dp"
+        android:background="@drawable/toggleswitch"
+        android:checked="true"
+        android:onClick="onToggleClicked"
+        android:textOff=""
+        android:textOn="" /> -->
+
+</LinearLayout>

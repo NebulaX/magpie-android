@@ -3,7 +3,7 @@ package in.co.nebulax.magpie;
 public class Constants {
 
 	// url to get data JSON
-	public static String url = "";
+	public static String url = "http://10.0.2.2:1111/all";
 	
 	//JSON Node Names
 	public static String TAG_DATA = "data";

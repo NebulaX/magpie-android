@@ -2,7 +2,10 @@ package in.co.nebulax.magpie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +37,8 @@ public class MainActivity extends ListActivity implements OnItemClickListener{
 	//Hashmap for ListView
 	ArrayList<HashMap<String, String>> deviceList;
 	
+	//Hashmap for adding varibles for StatusChange
+	List<NameValuePair> statusChange;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,7 @@ public class MainActivity extends ListActivity implements OnItemClickListener{
 		if(!isInternetPresent) {
 			Toast.makeText(this,"Unable to establish a connection", Toast.LENGTH_LONG).show();
 		} else {
+			
 			new DataHandler().execute(1);
 		}
 	//	Toast.makeText(this, "internet "+isInternetPresent,Toast.LENGTH_LONG).show();
@@ -73,53 +79,12 @@ public class MainActivity extends ListActivity implements OnItemClickListener{
        
        @Override
        protected Void doInBackground(Integer... arg0) {
-           // Creating service handler class instance
-           ServiceHandler sh = new ServiceHandler();
+         
 
            if(arg0[0] == 1){
-        	// Making a request to url and getting response
-               String jsonStr = sh.makeServiceCall(Constants.urlGet, ServiceHandler.GET);
-               Log.v("jsonStr" , jsonStr);
-               Log.d("Response: ", "> " + jsonStr);
-
-               if (jsonStr != null) {
-                   try {
-                      // JSONObject jsonObj = new JSONObject(jsonStr);                       
-                       // Getting JSON Array node
-                       //data = jsonObj.getJSONArray(jsonStr);
-                	   
-                	   data = new JSONArray(jsonStr);
-                	   Log.v("jsonStr" , data.toString());
-                       // looping through All Contacts
-                       for (int i = 0; i < data.length(); i++) {
-                           JSONObject c = data.getJSONObject(i);
-                            
-                           String device = c.getString(Constants.TAG_DEVICE);
-                           String name = c.getString(Constants.TAG_NAME);
-                           String status = c.getString(Constants.TAG_STATUS);
-                          
-
-                           // tmp hashmap for single contact
-                           HashMap<String, String> object = new HashMap<String, String>();
-
-                           // adding each child node to HashMap key => value
-                           object.put(Constants.TAG_DEVICE,device);
-                           object.put(Constants.TAG_NAME,name);
-                           object.put(Constants.TAG_STATUS, status);
-                          
-
-                           // adding contact to contact list
-                           deviceList.add(object);
-                       }
-                   } catch (JSONException e) {
-                       e.printStackTrace();
-                   }
-               } else {
-                   Log.e("ServiceHandler", "Couldn't get any data from the url");
-               }
-
+        	   getData();
            }else{
-        	   Log.v("AsyncCheck" , "2 entered so nothing displayed");
+        	   postData();
            }
            
            return null;
@@ -152,9 +117,88 @@ public class MainActivity extends ListActivity implements OnItemClickListener{
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		// TODO Auto-generated method stub
+
+		Toast.makeText(this, deviceList.get(position).get(Constants.TAG_DEVICE),
+				Toast.LENGTH_SHORT).show();		
+		statusChange = new ArrayList<NameValuePair>();
+		statusChange.add(new BasicNameValuePair("deviceId", 
+				deviceList.get(position).get(Constants.TAG_NAME)));
+		statusChange.add(new BasicNameValuePair("newStatus",
+				changeStatus(deviceList.get(position).get(Constants.TAG_STATUS))));
+		
+		new DataHandler().execute(2);
+	}
+	
+	public void getData(){
+		
+		// Creating service handler class instance
+        	ServiceHandler sh = new ServiceHandler();
+
+    	// Making a request to url and getting response
+           String jsonStr = sh.makeServiceCall(Constants.urlGet, ServiceHandler.GET);
+           Log.v("jsonStr" , jsonStr);
+           Log.d("Response: ", "> " + jsonStr);
+
+           if (jsonStr != null) {
+               try {
+                  // JSONObject jsonObj = new JSONObject(jsonStr);                       
+                   // Getting JSON Array node
+                   //data = jsonObj.getJSONArray(jsonStr);
+            	   
+            	   data = new JSONArray(jsonStr);
+            	   Log.v("jsonStr" , data.toString());
+                   // looping through All Contacts
+                   for (int i = 0; i < data.length(); i++) {
+                       JSONObject c = data.getJSONObject(i);
+                        
+                       String device = c.getString(Constants.TAG_DEVICE);
+                       String name = c.getString(Constants.TAG_NAME);
+                       String status = c.getString(Constants.TAG_STATUS);
+                      
+
+                       // tmp hashmap for single contact
+                       HashMap<String, String> object = new HashMap<String, String>();
+
+                       // adding each child node to HashMap key => value
+                       object.put(Constants.TAG_DEVICE,device);
+                       object.put(Constants.TAG_NAME,name);
+                       object.put(Constants.TAG_STATUS, status);
+                      
+
+                       // adding contact to contact list
+                       deviceList.add(object);
+                   }
+               } catch (JSONException e) {
+                   e.printStackTrace();
+               }
+           } else {
+               Log.e("ServiceHandler", "Couldn't get any data from the url");
+           }   
+	}
+	
+	public void postData() {
+
+		// Creating service handler class instance
+    	ServiceHandler sh = new ServiceHandler();
+    	
+    	// Making a request to url and getting response
+        String jsonStr = sh.makeServiceCall(Constants.urlPost, ServiceHandler.GET , statusChange);
+        Log.v("jsonStr" , jsonStr);
+        Log.d("Response: ", "> " + jsonStr);
+	}
+	
+	public String changeStatus(String s){
+		
+		if(s.equalsIgnoreCase("on")){
+			return "off";
+		}else {
+			return "on";
+		}
 		
 	}
+	
+	
 
 }

@@ -79,16 +79,17 @@ public class MainActivity extends ListActivity implements OnItemClickListener{
            if(arg0[0] == 1){
         	// Making a request to url and getting response
                String jsonStr = sh.makeServiceCall(Constants.urlGet, ServiceHandler.GET);
-
+               Log.v("jsonStr" , jsonStr);
                Log.d("Response: ", "> " + jsonStr);
 
                if (jsonStr != null) {
                    try {
-                       JSONObject jsonObj = new JSONObject(jsonStr);
-                        
+                      // JSONObject jsonObj = new JSONObject(jsonStr);                       
                        // Getting JSON Array node
-                       data = jsonObj.getJSONArray(Constants.TAG_DATA);
-
+                       //data = jsonObj.getJSONArray(jsonStr);
+                	   
+                	   data = new JSONArray(jsonStr);
+                	   Log.v("jsonStr" , data.toString());
                        // looping through All Contacts
                        for (int i = 0; i < data.length(); i++) {
                            JSONObject c = data.getJSONObject(i);

@@ -11,4 +11,5 @@ public class Constants {
 	public static String TAG_DEVICE = "device";
 	public static String TAG_STATUS = "status";
 	public static String TAG_NAME = "name";
+	public static String TAG_TYPE="type";
 }

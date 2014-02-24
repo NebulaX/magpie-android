@@ -51,14 +51,14 @@ public class MainActivity extends ListActivity implements OnItemClickListener{
 		if(!isInternetPresent) {
 			Toast.makeText(this,"Unable to establish a connection", Toast.LENGTH_LONG).show();
 		} else {
-			new GetData().execute();
+			new DataHandler().execute(1);
 		}
 	//	Toast.makeText(this, "internet "+isInternetPresent,Toast.LENGTH_LONG).show();
 		
 	}
 	
 	//Async Task class to get JSON by making HTTP call
-	 private class GetData extends AsyncTask<Void, Void, Void> {
+	 private class DataHandler extends AsyncTask<Integer, Void, Void> {
 		 
        @Override
        protected void onPreExecute() {
@@ -72,50 +72,55 @@ public class MainActivity extends ListActivity implements OnItemClickListener{
        }
        
        @Override
-       protected Void doInBackground(Void... arg0) {
+       protected Void doInBackground(Integer... arg0) {
            // Creating service handler class instance
            ServiceHandler sh = new ServiceHandler();
 
-           // Making a request to url and getting response
-           String jsonStr = sh.makeServiceCall(Constants.url, ServiceHandler.GET);
+           if(arg0[0] == 1){
+        	// Making a request to url and getting response
+               String jsonStr = sh.makeServiceCall(Constants.urlGet, ServiceHandler.GET);
 
-           Log.d("Response: ", "> " + jsonStr);
+               Log.d("Response: ", "> " + jsonStr);
 
-           if (jsonStr != null) {
-               try {
-                   JSONObject jsonObj = new JSONObject(jsonStr);
-                    
-                   // Getting JSON Array node
-                   data = jsonObj.getJSONArray(Constants.TAG_DATA);
-
-                   // looping through All Contacts
-                   for (int i = 0; i < data.length(); i++) {
-                       JSONObject c = data.getJSONObject(i);
+               if (jsonStr != null) {
+                   try {
+                       JSONObject jsonObj = new JSONObject(jsonStr);
                         
-                       String device = c.getString(Constants.TAG_DEVICE);
-                       String name = c.getString(Constants.TAG_NAME);
-                       String status = c.getString(Constants.TAG_STATUS);
-                      
+                       // Getting JSON Array node
+                       data = jsonObj.getJSONArray(Constants.TAG_DATA);
 
-                       // tmp hashmap for single contact
-                       HashMap<String, String> object = new HashMap<String, String>();
+                       // looping through All Contacts
+                       for (int i = 0; i < data.length(); i++) {
+                           JSONObject c = data.getJSONObject(i);
+                            
+                           String device = c.getString(Constants.TAG_DEVICE);
+                           String name = c.getString(Constants.TAG_NAME);
+                           String status = c.getString(Constants.TAG_STATUS);
+                          
 
-                       // adding each child node to HashMap key => value
-                       object.put(Constants.TAG_DEVICE,device);
-                       object.put(Constants.TAG_NAME,name);
-                       object.put(Constants.TAG_STATUS, status);
-                      
+                           // tmp hashmap for single contact
+                           HashMap<String, String> object = new HashMap<String, String>();
 
-                       // adding contact to contact list
-                       deviceList.add(object);
+                           // adding each child node to HashMap key => value
+                           object.put(Constants.TAG_DEVICE,device);
+                           object.put(Constants.TAG_NAME,name);
+                           object.put(Constants.TAG_STATUS, status);
+                          
+
+                           // adding contact to contact list
+                           deviceList.add(object);
+                       }
+                   } catch (JSONException e) {
+                       e.printStackTrace();
                    }
-               } catch (JSONException e) {
-                   e.printStackTrace();
+               } else {
+                   Log.e("ServiceHandler", "Couldn't get any data from the url");
                }
-           } else {
-               Log.e("ServiceHandler", "Couldn't get any data from the url");
-           }
 
+           }else{
+        	   Log.v("AsyncCheck" , "2 entered so nothing displayed");
+           }
+           
            return null;
        }
        
